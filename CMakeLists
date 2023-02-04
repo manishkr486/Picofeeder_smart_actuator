@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.13)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+set(PICO_SDK_PATH "/home/$ENV{USER}/pico/pico-sdk")
+
+include(pico_sdk_import.cmake)
+
+project(pico_encoders C CXX ASM)
+
+pico_sdk_init()
+
+add_executable(picofeeder)
+
+        
+
+
+pico_generate_pio_header(picofeeder ${CMAKE_CURRENT_LIST_DIR}/encoders.pio)
+
+target_sources(picofeeder PRIVATE main.cpp functions.cpp lib/vcnl4040.cpp lib/I2C_comm.cpp lib/flash.cpp lib/servo.cpp lib/dynamixel/XL330.cpp lib/dynamixel/XL330_comm.cpp lib/dynamixel/dxl_pro.cpp lib/ads1115.cpp)
+
+target_link_libraries(picofeeder PRIVATE
+        pico_stdlib
+        hardware_pio
+        hardware_dma
+        hardware_irq
+        hardware_i2c
+        hardware_uart
+        hardware_flash
+        hardware_pwm
+        hardware_watchdog
+        hardware_adc
+        
+        )
+
+# enable usb output, disable uart output
+pico_enable_stdio_uart(picofeeder 0)
+pico_enable_stdio_usb(picofeeder 1)
+
+
+pico_add_extra_outputs(picofeeder)
+
+# add url via pico_set_program_url
+#example_auto_set_url(picofeeder)
